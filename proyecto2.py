@@ -66,3 +66,18 @@ class DetallesCompras:
         self.subtotal = subtotal
         self.fechaCaducidad = fechaCaducidad
 
+class Mod_Empleado:
+    def __init__(self):
+        self.Empleados = {}
+    def AgregarProducto(self):
+        while True:
+            idP= int(input("Ingrese el ID del empleado: "))
+            if idP not in self.Empleados:
+                nombre = input("Ingrese el nombre del empleado: ")
+                telefono = input("Ingrese el telefono del empleado: ")
+                direccion = input("Ingrese la direccion del empleado: ")
+                correo = input("Ingrese la correo del empleado: ")
+                self.Empleados[idP] = Empleado(idP, nombre, telefono, direccion, correo)
+                break
+            else:
+                print("El ID de empleado ya existe")
