@@ -165,12 +165,12 @@ class Mod_Proveedor:
                         else:
                             break
                     while True:
-                        idCat = int(input("Ingrese el ID del categoria: ")).strip()
+                        idCategoria = int(input("Ingrese el ID del categoria: ")).strip()
                         if idCat not in Mod_Categoria.Categorias:
                             input("Error: La categoría no existe. Agrega primero la categoría.")
                             break
                         else:
-                            self.Proveedores[idProv] = Proveedor(idProv, empresa, telefono, direccion, correo, idCat)
+                            self.Proveedores[idProv] = Proveedor(idProv, empresa, telefono, direccion, correo, idCategoria)
                             input("Proveedor ingresado correctamente")
                             break
                 else:
@@ -221,11 +221,10 @@ class Mod_Producto:
                     input("El ID del producto ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
-
-
-
-
-
-
 Mod_Empleado = Mod_Empleado()
+Mod_Categoria = Mod_Categoria()
+Mod_Producto = Mod_Producto()
+Mod_Producto.AgregarProducto()
+Mod_Proveedor.AgregarProveedor()
 Mod_Empleado.AgregarEmpleado()
+Mod_Producto.AgregarProducto()
