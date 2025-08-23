@@ -165,12 +165,12 @@ class Mod_Proveedor:
                         else:
                             break
                     while True:
-                        idCategoria = int(input("Ingrese el ID del categoria: ")).strip()
+                        idCat= int(input("Ingrese el ID del categoria: ")).strip()
                         if idCat not in Mod_Categoria.Categorias:
                             input("Error: La categoría no existe. Agrega primero la categoría.")
                             break
                         else:
-                            self.Proveedores[idProv] = Proveedor(idProv, empresa, telefono, direccion, correo, idCategoria)
+                            self.Proveedores[idProv] = Proveedor(idProv, nombre, empresa, telefono, direccion, correo, idCat)
                             input("Proveedor ingresado correctamente")
                             break
                 else:
@@ -183,7 +183,7 @@ class Mod_Proveedor:
 class Mod_Producto:
     def __init__(self):
         self.Productos = {}
-    def AgregarProducto(self):
+    def AgregarProducto(self,):
         while True:
             try:
                 idP = int(input("Ingrese el ID del producto: "))
@@ -214,7 +214,7 @@ class Mod_Producto:
                                     print("Ingrese numeros enteros")
                             totalVentas = 0
                             stock = totalCompras - totalVentas
-                            self.Productos[idP] = Producto(nombre, idCat, precio, totalCompras, totalVentas, stock)
+                            self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas,stock)
                             input("Producto ingresado correctamente")
                             break
                 else:
@@ -224,7 +224,8 @@ class Mod_Producto:
 Mod_Empleado = Mod_Empleado()
 Mod_Categoria = Mod_Categoria()
 Mod_Producto = Mod_Producto()
+Mod_Proveedor = Mod_Proveedor()
 Mod_Producto.AgregarProducto()
-Mod_Proveedor.AgregarProveedor()
 Mod_Empleado.AgregarEmpleado()
 Mod_Producto.AgregarProducto()
+Mod_Proveedor.AgregarProveedor()
