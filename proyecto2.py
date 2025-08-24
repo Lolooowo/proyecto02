@@ -1,3 +1,5 @@
+from datetime import date
+
 class Empleado:
     def __init__(self, IDEmpleado, nombre, telefono, direccion, correo):
         self.IDEmpleado = IDEmpleado
@@ -28,8 +30,8 @@ class Producto:
         self.totalCompras = totalCompras
         self.stock = stock
 class Cliente:
-    def __init__(self, IDCliente, nombre, telefono, direccion, correo):
-        self.IDCliente = IDCliente
+    def __init__(self, NIT, nombre, telefono, direccion, correo):
+        self.NIT = NIT
         self.nombre = nombre
         self.telefono = telefono
         self.direccion = direccion
@@ -72,7 +74,7 @@ class Mod_Empleado:
     def AgregarEmpleado(self):
         while True:
             try:
-                idE= int(input("Ingrese el ID del empleado: ")).strip()
+                idE= int(input("Ingrese el ID del empleado: "))
                 if idE not in self.Empleados:
                     while True:
                         nombre = input("Ingrese el nombre del empleado: ").strip()
@@ -98,7 +100,7 @@ class Mod_Empleado:
                             input("No se puede dejar el correo vacío")
                         else:
                             break
-                    self.Empleados[idP] = Empleado(idP, nombre, telefono, direccion, correo)
+                    self.Empleados[idE] = Empleado(idE, nombre, telefono, direccion, correo)
                     print(f"Empleado Ingresado correctamente")
                     break
                 else:
@@ -165,7 +167,7 @@ class Mod_Proveedor:
                         else:
                             break
                     while True:
-                        idCat= int(input("Ingrese el ID del categoria: ")).strip()
+                        idCat= int(input("Ingrese el ID del categoria: "))
                         if idCat not in Mod_Categoria.Categorias:
                             input("Error: La categoría no existe. Agrega primero la categoría.")
                             break
@@ -221,10 +223,101 @@ class Mod_Producto:
                     input("El ID del producto ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
+class Mod_Clientes:
+    def __init__(self):
+        self.Clientes ={}
+
+    def AgregarCliente(self):
+        while True:
+            try:
+                NIT = int(input("Ingrese el NIT del cliente: "))
+                if NIT not in self.Clientes:
+                    while True:
+                        nombre = input("Ingrese el nombre del cliente: ").strip()
+                        if not nombre:
+                            input("No se puede dejar el nombre del cliente")
+                        else:
+                            break
+                    while True:
+                        telefono = input("Ingrese el nombre del cliente: ").strip()
+                        if not telefono:
+                            input("No se puede dejar el telefono vacío")
+                        else:
+                            break
+                    while True:
+                        direccion = input("Ingrese la direccion del cliente: ").strip()
+                        if not direccion:
+                            input("No se puede dejar la direccion vacía")
+                        else:
+                            break
+                    while True:
+                        correo = input("Ingrese el correo del cliente: ").strip()
+                        if not correo:
+                            input("No se puede dejar el correo vacío")
+                        else:
+                            break
+                    self.Clientes[NIT] = Cliente(NIT,nombre,telefono,direccion,correo)
+                    input("Cliente ingresado correctamente")
+                    break
+                else:
+                    input("El ID del cliente ya existe")
+            except ValueError:
+                input("Ingrese un ID correcto")
+class Mod_Venta:
+    def __init__(self):
+        self.Ventas = {}
+    def AgregarVenta(self):
+        while True:
+            try:
+                idVenta = int(input("Ingrese el ID del venta: "))
+                if idVenta not in self.Ventas:
+                    fecha = date.today()
+                    fecha_str = fecha.strftime("%d/%m/%Y %H:%M:%S")
+                    while True:
+                        try:
+                            NIT = int(input("Ingrese el NIT del cliente: "))
+                            if NIT not in Mod_Clientes.Clientes:
+                                input("No existe el cliente con ese NIT")
+                            else:
+                                break
+                        except ValueError:
+                            input("Ingrese un NIT correcto")
+                    while True:
+                        try:
+                            idEm = int(input("Ingrese el ID del empleado: "))
+                            if idEm not in Mod_Empleado.Empleados:
+                                input("No existe el empleado con ese ID")
+                            else:
+                                break
+                        except ValueError:
+                            input("Ingrese un ID correcto")
+                    while True:
+                        total = 0
+                        # aqui va el TOTAL de detalles venta.
+                        break
+                    self.Ventas[idVenta] = Venta(idVenta,fecha_str,NIT,idEm,total)
+                    input("Venta ingresada correctamente")
+                else:
+                    input("El ID de la venta ya existe")
+            except ValueError:
+                input("Ingrese un ID correcto")
+class Detalles_Venta:
+    def __init__(self):
+        self.Detalles_Venta = {}
+    def AgregarDetallesVenta(self):
+
+
+
+
+
+
+
 Mod_Empleado = Mod_Empleado()
 Mod_Categoria = Mod_Categoria()
 Mod_Producto = Mod_Producto()
 Mod_Proveedor = Mod_Proveedor()
+Mod_Clientes = Mod_Clientes()
+Mod_Venta = Mod_Venta()
 Mod_Producto.AgregarProducto()
 Mod_Empleado.AgregarEmpleado()
 Mod_Producto.AgregarProducto()
