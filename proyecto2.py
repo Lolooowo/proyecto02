@@ -263,6 +263,51 @@ class Mod_Clientes:
                     input("El ID del cliente ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
+
+
+class Mod_DetallesVenta:
+    def __init__(self):
+        self.Detalles_Venta = {}
+    def AgregarDetallesVenta(self, idVenta):
+        while True:
+            try:
+                if len(self.Detalles_Venta) == 0:
+                    idDet= 1
+                    break
+                else:
+                    mayor = len(self.Detalles_Venta)
+                    idDet = mayor + 1
+                    break
+            except ValueError:
+                input("Ingrese un ID correcto")
+        while True:
+            try:
+                idProd = int(input("Ingrese el ID del producto: "))
+                if idProd not in Mod_Producto.Productos:
+                    input("No existe el producto con el ID ingresado...")
+                else:
+                    while True:
+                        try:
+                            producto = Mod_Producto.Productos[idProd]
+                            cantidad = int(input(f"Ingrese la cantidad de producto {producto.nombre}:"))
+                            if cantidad<0:
+                                input("No se puede ingresar una cantidad negativa")
+                            else:
+                                if cantidad>producto.stock:
+                                    input("No existe stock para ese producto")
+                                else:
+                                    break
+                        except ValueError:
+                            input("Ingrese una cantidad correcta")
+                    precio = producto.precio
+                    subTotal = precio * cantidad
+                    self.Detalles_Venta[idDet]: DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
+
+            except ValueError:
+                input("Ingrese un ID correcto")
+
+
+
 class Mod_Venta:
     def __init__(self):
         self.Ventas = {}
@@ -301,13 +346,6 @@ class Mod_Venta:
                     input("El ID de la venta ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
-class Detalles_Venta:
-    def __init__(self):
-        self.Detalles_Venta = {}
-    def AgregarDetallesVenta(self):
-
-
-
 
 
 
