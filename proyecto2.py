@@ -302,6 +302,7 @@ class Mod_DetallesVenta:
                     precio = producto.precio
                     subTotal = precio * cantidad
                     self.Detalles_Venta[idDet]: DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
+                    input("Detalle venta agregada correcta")
 
             except ValueError:
                 input("Ingrese un ID correcto")
@@ -337,9 +338,10 @@ class Mod_Venta:
                         except ValueError:
                             input("Ingrese un ID correcto")
                     while True:
-                        total = 0
-                        # aqui va el TOTAL de detalles venta.
-                        break
+                        try:
+                            Mod_DetallesVenta.AgregarDetallesVenta(idVenta)
+                        except ValueError:
+                            input("Ingrese un ID correcto")
                     self.Ventas[idVenta] = Venta(idVenta,fecha_str,NIT,idEm,total)
                     input("Venta ingresada correctamente")
                 else:
@@ -356,6 +358,8 @@ Mod_Producto = Mod_Producto()
 Mod_Proveedor = Mod_Proveedor()
 Mod_Clientes = Mod_Clientes()
 Mod_Venta = Mod_Venta()
+Mod_DetallesVenta = Mod_DetallesVenta()
+Mod_Venta.AgregarVenta()
 Mod_Producto.AgregarProducto()
 Mod_Empleado.AgregarEmpleado()
 Mod_Producto.AgregarProducto()
