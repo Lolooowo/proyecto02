@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import datetime
 
 class Empleado:
     def __init__(self, IDEmpleado, nombre, telefono, direccion, correo):
@@ -21,14 +22,14 @@ class Proveedor:
         self.correo = correo
         self.IDCategoria = IDCategoria
 class Producto:
-    def __init__(self, IDProducto, nombre, IDCategoria, precio, totalVentas, totalCompras, stock):
+    def __init__(self, IDProducto, nombre, IDCategoria, precio, totalVentas, totalCompras):
         self.IDProducto = IDProducto
         self.nombre = nombre
         self.IDCategoria = IDCategoria
         self.precio = precio
         self.totalVentas = totalVentas
         self.totalCompras = totalCompras
-        self.stock = stock
+        self.stock = self.totalCompras - self.totalVentas
 class Cliente:
     def __init__(self, NIT, nombre, telefono, direccion, correo):
         self.NIT = NIT
@@ -71,6 +72,22 @@ class DetallesCompras:
 class Mod_Empleado:
     def __init__(self):
         self.Empleados = {}
+        self.cargar_empleados()
+
+    def cargar_empleados(self):
+        try:
+            with open("Empleados.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idEmp,Nombre,telefono,direccion,correo = linea.split(":")
+                        self.Empleados[idEmp]={
+                            Empleado(idEmp,Nombre, telefono,direccion,correo)
+                        }
+                print(f"Empleados importados correctamente desde el archivo {archivo.name}")
+        except FileNotFoundError:
+            print(f"No existe el archivo a importar, se creará uno al guardar")
+
     def AgregarEmpleado(self):
         while True:
             try:
@@ -208,15 +225,9 @@ class Mod_Producto:
                                     break
                                 except ValueError:
                                     input("Ingrese el precio correcto.")
-                            while True:
-                                try:
-                                    totalCompras = int(input("Ingrese los productos comprados: "))
-                                    break
-                                except ValueError:
-                                    print("Ingrese numeros enteros")
+                            totalCompras = 0
                             totalVentas = 0
-                            stock = totalCompras - totalVentas
-                            self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas,stock)
+                            self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
                             input("Producto ingresado correctamente")
                             break
                 else:
@@ -269,43 +280,49 @@ class Mod_DetallesVenta:
     def __init__(self):
         self.Detalles_Venta = {}
     def AgregarDetallesVenta(self, idVenta):
-        while True:
-            try:
-                if len(self.Detalles_Venta) == 0:
-                    idDet= 1
-                    break
-                else:
-                    mayor = len(self.Detalles_Venta)
-                    idDet = mayor + 1
-                    break
-            except ValueError:
-                input("Ingrese un ID correcto")
-        while True:
-            try:
-                idProd = int(input("Ingrese el ID del producto: "))
-                if idProd not in Mod_Producto.Productos:
-                    input("No existe el producto con el ID ingresado...")
-                else:
-                    while True:
-                        try:
-                            producto = Mod_Producto.Productos[idProd]
-                            cantidad = int(input(f"Ingrese la cantidad de producto {producto.nombre}:"))
-                            if cantidad<0:
-                                input("No se puede ingresar una cantidad negativa")
-                            else:
-                                if cantidad>producto.stock:
-                                    input("No existe stock para ese producto")
-                                else:
-                                    break
-                        except ValueError:
-                            input("Ingrese una cantidad correcta")
-                    precio = producto.precio
-                    subTotal = precio * cantidad
-                    self.Detalles_Venta[idDet]: DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
-                    input("Detalle venta agregada correcta")
-
-            except ValueError:
-                input("Ingrese un ID correcto")
+        idProd = 0
+        while idProd!=1972:
+            while True:
+                try:
+                    if len(self.Detalles_Venta) == 0:
+                        idDet= 1
+                        break
+                    else:
+                        mayor = len(self.Detalles_Venta)
+                        idDet = mayor + 1
+                        break
+                except ValueError:
+                    input("Ingrese un ID correcto")
+            while True:
+                try:
+                    idProd = int(input("Ingrese el ID del producto: "))
+                    if idProd == 1972:
+                        break
+                    else:
+                        if idProd not in Mod_Producto.Productos:
+                            input("No existe el producto con el ID ingresado...")
+                        else:
+                            while True:
+                                try:
+                                    producto = Mod_Producto.Productos[idProd]
+                                    cantidad = int(input(f"Ingrese la cantidad de producto {producto.nombre}:"))
+                                    if cantidad<0:
+                                        input("No se puede ingresar una cantidad negativa")
+                                    else:
+                                        if cantidad>producto.stock:
+                                            input("No existe stock para ese producto")
+                                        else:
+                                            Mod_Producto.Productos[idProd].totalVentas = cantidad
+                                            break
+                                except ValueError:
+                                    input("Ingrese una cantidad correcta")
+                            precio = producto.precio
+                            subTotal = precio * cantidad
+                            self.Detalles_Venta[idDet]: DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
+                            input("Detalle venta agregada correcta")
+                            break
+                except ValueError:
+                    input("Ingrese un ID correcto")
 
 
 
@@ -339,13 +356,115 @@ class Mod_Venta:
                             input("Ingrese un ID correcto")
                     while True:
                         try:
+                            total= 0
                             Mod_DetallesVenta.AgregarDetallesVenta(idVenta)
+                            for clave, valor in Mod_DetallesVenta.Detalles_Venta.items():
+                                if valor.idVenta == idVenta:
+                                    total += valor.idVenta
                         except ValueError:
                             input("Ingrese un ID correcto")
                     self.Ventas[idVenta] = Venta(idVenta,fecha_str,NIT,idEm,total)
                     input("Venta ingresada correctamente")
                 else:
                     input("El ID de la venta ya existe")
+            except ValueError:
+                input("Ingrese un ID correcto")
+class Mod_DetallesCompras:
+    def __init__(self):
+        self.Detalles_Compras = {}
+    def AgregarCompras(self, idCompras):
+        cantidad= 0
+        while cantidad!=1972:
+            if len(self.Detalles_Compras) == 0:
+                idDetCom = 1
+                break
+            else:
+                mayor = len(self.Detalles_Compras)
+                idDetCom = mayor + 1
+            while True:
+                try:
+                    cantidad = int(input("Ingrese la cantidad del productos para ingresarlos al sistema: "))
+                    if cantidad == 1972:
+                        break
+                    if cantidad<0:
+                        input("Ingrese la cantidad en numeros enteros positivos.")
+                    else:
+                        break
+                except ValueError:
+                    input("Ingrese una cantidad correcta")
+            while True:
+                try:
+                    idProd = int(input("Ingrese el ID del producto: "))
+                    if idProd not in Mod_Producto.Productos:
+                        input("No existe el producto con ese ID, por favor ingrese el producto antes")
+                    else:
+                        Mod_Producto.Productos[idProd].totalCompras = cantidad
+                        while True:
+                            try:
+                                precioCompra = float(input("Ingrese el precio de compra del producto: "))
+                                if precioCompra<0:
+                                    input("Por favor ingresa un precio positivo")
+                                else:
+                                    break
+                            except ValueError:
+                                input("Ingrese un precio correcto")
+                        break
+                except ValueError:
+                    input("Ingrese un ID correcto")
+            subtotal = cantidad * precioCompra
+            while True:
+                fecha_str = input("Ingrese la fecha de caduccio del producto (dd/mm/yyyy): ")
+                try:
+                    fechaCaducidad = datetime.strptime(fecha_str, "%d/%m/%Y").date()
+                    break
+                except ValueError:
+                    input("Formato de fecha inválido. Debe ser dd/mm/yy.")
+            self.Detalles_Compras[idDetCom]= DetallesCompras(idDetCom,idCompras,cantidad,idProd,precioCompra,subtotal,fechaCaducidad)
+            input("Venta agregada correctamente")
+
+class Compras:
+    def __init__(self):
+        self.Compras = {}
+    def agregarCompras(self):
+        while True:
+            try:
+                idCom= int(input("Ingrese el ID de la compra: "))
+                if idCom in self.Compras:
+                    input("El ID de la compra ya existe")
+                else:
+                    break
+            except ValueError:
+                input("Ingrese un ID correcto")
+        fechaCompra = date.today()
+        fechaCompra_str = fechaCompra.strftime("%d/%m/%Y %H:%M:%S")
+        cont = 0
+        while True:
+            try:
+                if cont == 3:
+                    break
+                else:
+                    idProv = int(input("Ingrese el ID del proveedor: "))
+                    if idProv not in Mod_Proveedor.Proveedores:
+                        input("No existe un proveedor con ese ID")
+                        cont +=1
+                    else:
+                        cont = 0
+                        while True:
+                            try:
+                                if cont == 3:
+                                    break
+                                idEmp = int(input("Ingrese el ID de la empresa: "))
+                                if idEmp not in Mod_Empleado.Empleados:
+                                    input("No existe un empleado con ese ID")
+                                    cont += 1
+                                else:
+                                    Mod_DetallesCompras.AgregarCompras(idCom)
+                                    for clave, valor in Mod_DetallesCompras.Detalles_Compras.items():
+
+                                    break
+                            except ValueError:
+                                input("Ingrese un ID correcto")
+                        break
             except ValueError:
                 input("Ingrese un ID correcto")
 
@@ -359,8 +478,13 @@ Mod_Proveedor = Mod_Proveedor()
 Mod_Clientes = Mod_Clientes()
 Mod_Venta = Mod_Venta()
 Mod_DetallesVenta = Mod_DetallesVenta()
+Mod_Compras = Mod_Compras()
+Mod_DetallesCompras = Mod_DetallesCompras()
+Mod_DetallesVenta.AgregarDetallesVenta(123)
+input("SALIO")
 Mod_Venta.AgregarVenta()
 Mod_Producto.AgregarProducto()
 Mod_Empleado.AgregarEmpleado()
 Mod_Producto.AgregarProducto()
 Mod_Proveedor.AgregarProveedor()
+
