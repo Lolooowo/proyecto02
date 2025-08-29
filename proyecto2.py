@@ -82,11 +82,15 @@ class Mod_Empleado:
                     if linea:
                         idEmp,Nombre,telefono,direccion,correo = linea.split(":")
                         self.Empleados[idEmp]={
-                            Empleado(idEmp,Nombre, telefono,direccion,correo)
+                            Empleado(idEmp,Nombre,telefono,direccion,correo)
                         }
                 print(f"Empleados importados correctamente desde el archivo {archivo.name}")
         except FileNotFoundError:
             print(f"No existe el archivo a importar, se creará uno al guardar")
+    def guardar_Empleados(self):
+        with open(f"Empleados.txt", "w", encoding="utf-8") as archivo:
+            for clave, valor in self.Empleados.items():
+                archivo.write(f"{clave}:{valor.nombre}:{valor.telefono}:{valor.direccion}:{valor.correo}\n")
 
     def AgregarEmpleado(self):
         while True:
@@ -118,6 +122,7 @@ class Mod_Empleado:
                         else:
                             break
                     self.Empleados[idE] = Empleado(idE, nombre, telefono, direccion, correo)
+                    Mod_Empleado.guardar_Empleados()
                     print(f"Empleado Ingresado correctamente")
                     break
                 else:
@@ -416,7 +421,7 @@ class Mod_DetallesCompras:
                     input("Ingrese un ID correcto")
             subtotal = cantidad * precioCompra
             while True:
-                fecha_str = input("Ingrese la fecha de caduccio del producto (dd/mm/yyyy): ")
+                fecha_str = input("Ingrese la fecha de caducidad del producto (dd/mm/yyyy): ")
                 try:
                     fechaCaducidad = datetime.strptime(fecha_str, "%d/%m/%Y").date()
                     break
