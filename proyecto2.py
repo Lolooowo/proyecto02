@@ -354,15 +354,11 @@ class Mod_Venta:
                                 break
                         except ValueError:
                             input("Ingrese un ID correcto")
-                    while True:
-                        try:
-                            total= 0
-                            Mod_DetallesVenta.AgregarDetallesVenta(idVenta)
-                            for clave, valor in Mod_DetallesVenta.Detalles_Venta.items():
-                                if valor.idVenta == idVenta:
-                                    total += valor.idVenta
-                        except ValueError:
-                            input("Ingrese un ID correcto")
+                    total= 0
+                    Mod_DetallesVenta.AgregarDetallesVenta(idVenta)
+                    for clave, valor in Mod_DetallesVenta.Detalles_Venta.items():
+                        if valor.idVenta == idVenta:
+                            total += valor.subTotal
                     self.Ventas[idVenta] = Venta(idVenta,fecha_str,NIT,idEm,total)
                     input("Venta ingresada correctamente")
                 else:
@@ -422,7 +418,7 @@ class Mod_DetallesCompras:
             self.Detalles_Compras[idDetCom]= DetallesCompras(idDetCom,idCompras,cantidad,idProd,precioCompra,subtotal,fechaCaducidad)
             input("Venta agregada correctamente")
 
-class Compras:
+class Mod_Compras:
     def __init__(self):
         self.Compras = {}
     def agregarCompras(self):
@@ -458,18 +454,18 @@ class Compras:
                                     input("No existe un empleado con ese ID")
                                     cont += 1
                                 else:
+                                    total=0
                                     Mod_DetallesCompras.AgregarCompras(idCom)
                                     for clave, valor in Mod_DetallesCompras.Detalles_Compras.items():
-
-                                    break
+                                        if valor.idCompra == idCom:
+                                            total += valor.subtotal
+                                    self.Compras[idCom] = Compras(idCom, fechaCompra_str, idProv, idEmp, total)
+                                    input("Venta agregada correctamente")
                             except ValueError:
                                 input("Ingrese un ID correcto")
                         break
             except ValueError:
                 input("Ingrese un ID correcto")
-
-
-
 
 Mod_Empleado = Mod_Empleado()
 Mod_Categoria = Mod_Categoria()
@@ -480,11 +476,5 @@ Mod_Venta = Mod_Venta()
 Mod_DetallesVenta = Mod_DetallesVenta()
 Mod_Compras = Mod_Compras()
 Mod_DetallesCompras = Mod_DetallesCompras()
-Mod_DetallesVenta.AgregarDetallesVenta(123)
-input("SALIO")
-Mod_Venta.AgregarVenta()
-Mod_Producto.AgregarProducto()
-Mod_Empleado.AgregarEmpleado()
-Mod_Producto.AgregarProducto()
-Mod_Proveedor.AgregarProveedor()
+
 
