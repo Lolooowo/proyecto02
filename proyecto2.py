@@ -203,37 +203,44 @@ class Mod_Producto:
     def __init__(self):
         self.Productos = {}
     def AgregarProducto(self,):
-        while True:
-            try:
-                idP = int(input("Ingrese el ID del producto: "))
-                if idP not in self.Productos:
-                    while True:
-                        nombre = input("Ingrese el nombre del producto: ").strip()
-                        if not nombre:
-                            input("No se puede dejar el nombre del producto vacío")
-                        else:
-                            break
-                    while True:
-                        idCat = int(input("Ingrese el ID del categoria: "))
-                        if idCat not in Mod_Categoria.Categorias:
-                            input("Error: La categoría no existe. Agrega primero la categoría.")
-                            break
-                        else:
+        salir=0
+        while salir!=1972:
+            while True:
+                try:
+                    idP = int(input("Ingrese el ID del producto: "))
+                    if idP == 1972:
+                        salir= idP
+                        break
+                    else:
+                        if idP not in self.Productos:
                             while True:
-                                try:
-                                    precio = float(input("Ingrese el precio del producto: Q."))
+                                nombre = input("Ingrese el nombre del producto: ").strip()
+                                if not nombre:
+                                    input("No se puede dejar el nombre del producto vacío")
+                                else:
                                     break
-                                except ValueError:
-                                    input("Ingrese el precio correcto.")
-                            totalCompras = 0
-                            totalVentas = 0
-                            self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
-                            input("Producto ingresado correctamente")
-                            break
-                else:
-                    input("El ID del producto ya existe")
-            except ValueError:
-                input("Ingrese un ID correcto")
+                            while True:
+                                idCat = int(input("Ingrese el ID del categoria: "))
+                                if idCat not in Mod_Categoria.Categorias:
+                                    input("Error: La categoría no existe. Agrega primero la categoría.")
+                                    break
+                                else:
+                                    while True:
+                                        try:
+                                            precio = float(input("Ingrese el precio del producto: Q."))
+                                            break
+                                        except ValueError:
+                                            input("Ingrese el precio correcto.")
+                                    totalCompras = 0
+                                    totalVentas = 0
+                                    self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
+                                    input("Producto ingresado correctamente")
+                                    break
+                        else:
+                            input("El ID del producto ya existe")
+
+                except ValueError:
+                    input("Ingrese un ID correcto")
 class Mod_Clientes:
     def __init__(self):
         self.Clientes ={}
@@ -477,4 +484,81 @@ Mod_DetallesVenta = Mod_DetallesVenta()
 Mod_Compras = Mod_Compras()
 Mod_DetallesCompras = Mod_DetallesCompras()
 
+while True:
+    print("MENU")
+    print("1. Agregar Producto/Categoria/Cliente/Empleado/Proveedor")
+    print("2. Realizar una Venta")
+    print("3.Realizar una Compra")
+    print("4. SALIR")
+    try:
+        opcion = int(input("Selecciona una opcion: "))
+        match opcion:
+            case 1:
+                while True:
+                    print("\n1. Agregar Producto")
+                    print("2. Agregar una Categoria")
+                    print("3. Agregar Cliente")
+                    print("4. Agregar Empleado")
+                    print("5. Agregar Proveedor")
+                    print("6. Regresar al menú principal")
+                    try:
+                        opcion1=int(input("Selecciona una opcion: "))
+                        match opcion1:
+                            case 1:
+                                if len(Mod_Categoria.Categorias) == 0:
+                                    input("No existen categorias, por favor agregue una categoria antes.")
+                                else:
+                                    print("\nAgregando un Producto")
+                                    Mod_Producto.AgregarProducto()
+                            case 2:
+                                print("\nAgregando una Categoría.")
+                                Mod_Categoria.AgregarCategoria()
+                            case 3:
+                                print("\nAgregando un Cliente")
+                                Mod_Clientes.AgregarCliente()
+                            case 4:
+                                print("\nAgregando un Empleado")
+                                Mod_Empleado.AgregarEmpleado()
+                            case 5:
+                                if len(Mod_Categoria.Categorias) == 0:
+                                    input("No existen categorias, por favor agregue una categoria antes.")
+                                else:
+                                    print("\nAgregando un Proveedor")
+                                    Mod_Proveedor.AgregarProveedor()
+                            case 6:
+                                input("Saliendo al menú principal...")
+                                break
+                            case _:
+                                input("Ingrese una opcion correcta")
+                    except ValueError:
+                        input("Ingrese una opcion correcta")
+
+            case 2:
+                if len(Mod_Empleado.Empleados) == 0:
+                    input("No hay empleados ingresados, por favor registre un empleado antes.")
+                elif len(Mod_Clientes.Clientes) == 0:
+                    input("No hay clientes ingresado, registre al cliente antes.")
+                elif len(Mod_Producto.Productos) == 0:
+                    input("No hay productos ingresados, registre al producto antes.")
+                else:
+                    print("\nAgregando una Venta:")
+                    Mod_Venta.AgregarVenta()
+            case 3:
+                if len(Mod_Empleado.Empleados) == 0:
+                    input("No hay empleados ingresados, por favor registre un empleado antes.")
+                elif len(Mod_Proveedor.Proveedores) == 0:
+                    input("No hay Proveedores ingresados, por favor registre al proveedor antes.")
+                elif len(Mod_Producto.Productos) == 0:
+                    input("No hay productos ingresados, por favor registre al producto antes.")
+                else:
+                    print("\nAgregando una Compra:")
+                    Mod_Compras.agregarCompras()
+            case 4:
+                print("Saliendo del programa....")
+                break
+            case _:
+                print("Selecciona una opcion válida")
+                pass
+    except ValueError:
+        input("Ingrese una opcion correcta")
 
