@@ -71,7 +71,7 @@ class DetallesCompras:
 
 class Mod_Empleado:
     def __init__(self):
-        self.Empleados = {}
+        self.Empleados ={}
         self.cargar_empleados()
 
     def cargar_empleados(self):
@@ -82,7 +82,10 @@ class Mod_Empleado:
                     if linea:
                         idEmp,Nombre,telefono,direccion,correo = linea.split(":")
                         self.Empleados[idEmp]={
-                            Empleado(idEmp,Nombre,telefono,direccion,correo)
+                            "nombre": Nombre,
+                            "telefono": telefono,
+                            "direccion": direccion,
+                            "correo": correo,
                         }
                 print(f"Empleados importados correctamente desde el archivo {archivo.name}")
         except FileNotFoundError:
@@ -90,7 +93,7 @@ class Mod_Empleado:
     def guardar_Empleados(self):
         with open(f"Empleados.txt", "w", encoding="utf-8") as archivo:
             for clave, valor in self.Empleados.items():
-                archivo.write(f"{clave}:{valor.nombre}:{valor.telefono}:{valor.direccion}:{valor.correo}\n")
+                archivo.write(f"{clave}:{valor["nombre"]}:{valor["telefono"]}:{valor["direccion"]}:{valor["correo"]}\n")
 
     def AgregarEmpleado(self):
         while True:
@@ -121,7 +124,13 @@ class Mod_Empleado:
                             input("No se puede dejar el correo vacío")
                         else:
                             break
-                    self.Empleados[idE] = Empleado(idE, nombre, telefono, direccion, correo)
+                    nuevoEmpleado = Empleado(idE, nombre, telefono, direccion, correo)
+                    self.Empleados[nuevoEmpleado.IDEmpleado] = {
+                        "nombre": nuevoEmpleado.nombre,
+                        "telefono": nuevoEmpleado.telefono,
+                        "direccion": nuevoEmpleado.direccion,
+                        "correo": nuevoEmpleado.correo
+                    }
                     Mod_Empleado.guardar_Empleados()
                     print(f"Empleado Ingresado correctamente")
                     break
@@ -129,9 +138,31 @@ class Mod_Empleado:
                     print("El ID de empleado ya existe")
             except ValueError:
                 input("Ingresa un ID correctamente, únicamente numeros")
+    def MostrarDatos(self):
+        for id,valor in self.Empleados.items():
+            print(f"\tID: {id}")
+            print(f"Nombre: {valor["nombre"]}, Telefono: {valor["telefono"]}, Direccion: {valor["direccion"]}, Correo: {valor["correo"]}")
 class Mod_Categoria:
     def __init__(self):
         self.Categorias = {}
+        self.cargar_Categorias()
+    def cargar_Categorias(self):
+        try:
+            with open(f"Categorias.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idCat,nombre=linea.split(":")
+                        self.Categorias[idCat]={
+                            "nombre": nombre,
+                        }
+                print(f"Categorias Importadas correctamente desde el archivo {archivo.name}.")
+        except FileNotFoundError:
+            print(f"No existe el archivoa importar, se creará uno nuevo al guardar")
+    def guardar_Categorias(self):
+        with open(f"Categorias.txt", "w", encoding="utf-8") as archivo:
+            for clave, valor in self.Categorias.items():
+                archivo.write(f"{clave}:{valor.nombre}\n")
     def AgregarCategoria(self):
         while True:
             try:
@@ -143,13 +174,20 @@ class Mod_Categoria:
                             input("No se puede dejar el nombre de la categoria vacía")
                         else:
                             break
-                    self.Categorias[idC] = Categoria(idC, nombre)
-                    input("Categoria ingresada correctamente")
+                    nuevaCategoria = Categoria(idC, nombre)
+                    self.Categorias[nuevaCategoria.IDCategoria] = {
+                        "nombre": nuevaCategoria.nombre,
+                    }
+                    self.guardar_Categorias()
+                    print("Categoria ingresada correctamente")
                     break
                 else:
                     print("El ID de categoria ya existe")
             except ValueError:
                 input("Ingrese unicamente números")
+    def MostrarDatos(self):
+        for id,cat in self.Categorias.items():
+            print(f"\tID:{id} Nombre:{cat.nombre}")
 class Mod_Proveedor:
     def __init__(self):
         self.Proveedores = {}
@@ -494,7 +532,8 @@ while True:
     print("1. Agregar Producto/Categoria/Cliente/Empleado/Proveedor")
     print("2. Realizar una Venta")
     print("3.Realizar una Compra")
-    print("4. SALIR")
+    print("4. Mostrar Datos")
+    print("5. SALIR")
     try:
         opcion = int(input("Selecciona una opcion: "))
         match opcion:
@@ -559,11 +598,47 @@ while True:
                     print("\nAgregando una Compra:")
                     Mod_Compras.agregarCompras()
             case 4:
-                print("Saliendo del programa....")
+                while True:
+                    print("1. Mostrar Empleados.")
+                    print("2. Mostrar Productos")
+                    print("3. Mostrar Venta")
+                    print("4. Mostrar Compra")
+                    print("5. Mostrar Proveedor")
+                    print("6. Mostrar Clientes")
+                    print("7. Mostrar Categorias")
+                    print("8. Saliendo al menú principal")
+                    try:
+                        opcion4=int(input("Selecciona una opcion: "))
+                        match opcion4:
+                            case 1:
+                                Mod_Empleado.MostrarDatos()
+                                input("")
+                            case 2:
+                                Mod_Producto.MostrarDatos()
+                                input("")
+                            case 3:
+                                Mod_Venta.MostrarDatos()
+                                input("")
+                            case 4:
+                                Mod_Compras.MostrarDatos()
+                                input("")
+                            case 5:
+                                Mod_Proveedor.MostrarDatos()
+                                input("")
+                            case 6:
+                                Mod_Clientes.MostrarDatos()
+                            case 7:
+                                Mod_Categorias.MostrarDatos()
+                            case 8:
+                                input("Saliendo al menú principal...")
+                                break
+                            case _:
+                                pass
+                    except ValueError:
+                        input("Ingrese una opcion correcta")
+            case 5:
                 break
             case _:
                 print("Selecciona una opcion válida")
-                pass
     except ValueError:
         input("Ingrese una opcion correcta")
-
