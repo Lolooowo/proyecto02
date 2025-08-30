@@ -191,6 +191,29 @@ class Mod_Categoria:
 class Mod_Proveedor:
     def __init__(self):
         self.Proveedores = {}
+        self.cargarProveedor()
+    def cargarProveedores(self):
+        try:
+            with open(f"Proveedores.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idProv,nombre,empresa,telefono,direccion,correo,idCat=linea.split(":")
+                        self.Proveedores[idProv]={
+                            "nombre": nombre,
+                            "empresa": empresa,
+                            "telefono": telefono,
+                            "direccion": direccion,
+                            "correo": correo,
+                            "idCat": idCat
+                        }
+                print(f"Proveedores importados correctamente desde el archivo {archivo.name}.")
+        except FileNotFoundError:
+            print(f"No existe el archivo a importar, se creará uno nuevo al guardar")
+    def guardarProveedor(self):
+        with open(f"Proveedores.txt", "w", encoding="utf-8") as archivo:
+            for id,prov in self.Proveedores.items():
+                archivo.write(f"{id}:{prov['nombre']}:{prov["empresa"]}:{prov["telefono"]}:{prov["direccion"]}:{prov["correo"]}:{prov["idCat"]}\n")
     def AgregarProveedor(self):
         while True:
             try:
@@ -232,7 +255,15 @@ class Mod_Proveedor:
                             input("Error: La categoría no existe. Agrega primero la categoría.")
                             break
                         else:
-                            self.Proveedores[idProv] = Proveedor(idProv, nombre, empresa, telefono, direccion, correo, idCat)
+                            nuevoProveedor = Proveedor(idProv, nombre, empresa, telefono, direccion, correo, idCat)
+                            self.Proveedores[nuevoProveedor.IDProveedor]={
+                                "nombre": nuevoProveedor.nombre,
+                                "empresa": nuevoProveedor.empresa,
+                                "telefono": nuevoProveedor.telefono,
+                                "direccion": nuevoProveedor.direccion,
+                                "correo": nuevoProveedor.correo,
+                                "idCat": nuevoProveedor.idCat
+                            }
                             input("Proveedor ingresado correctamente")
                             break
                 else:
