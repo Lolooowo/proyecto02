@@ -276,6 +276,29 @@ class Mod_Proveedor:
 class Mod_Producto:
     def __init__(self):
         self.Productos = {}
+        self.cargarProducto()
+    def cargarProducto(self):
+        try:
+            with open("Productos.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idProd,nombre,idCat,precio,totalVentas,TotalCompras, stock=linea.split(":")
+                        self.Productos[idProd] = {
+                            "nombre": nombre,
+                            "idCat": idCat,
+                            "precio": precio,
+                            "totalVentas": totalVentas,
+                            "TotalCompras": TotalCompras,
+                            "stock": stock
+                        }
+                print(f"Productos importados correctamente desde el archivo {archivo.name}")
+        except FileNotFoundError:
+            print(f"No existe el archivo a importar, se creará uno nuevo al guardar")
+    def guardarProducto(self):
+        with open("Productos.txt", "w", encoding="utf-8") as archivo:
+            for idProd,producto in self.Productos.items():
+                archivo.write(f"{idProd}:{producto["nombre"]}:{producto["idCat"]}:{producto["precio"]}:{producto["totalVentas"]}:{producto["totalCompras"]}:{producto["stock"]}\n")
     def AgregarProducto(self,):
         salir=0
         while salir!=1972:
@@ -307,7 +330,16 @@ class Mod_Producto:
                                             input("Ingrese el precio correcto.")
                                     totalCompras = 0
                                     totalVentas = 0
-                                    self.Productos[idP] = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
+                                    nuevoProducto = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
+                                    self.Productos[nuevoProducto.IDProducto] = {
+                                        "nombre": nuevoProducto.nombre,
+                                        "idCat": nuevoProducto.idCat,
+                                        "precio": nuevoProducto.precio,
+                                        "totalVentas": nuevoProducto.totalVentas,
+                                        "totalCompras": nuevoProducto.totalCompras,
+                                        "stock": nuevoProducto.stock
+                                    }
+                                    self.guardarProducto()
                                     input("Producto ingresado correctamente")
                                     break
                         else:
@@ -318,7 +350,27 @@ class Mod_Producto:
 class Mod_Clientes:
     def __init__(self):
         self.Clientes ={}
-
+        self.cargarClientes()
+    def cargarClientes(self):
+        try:
+            with open("Clientes.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        nit,nombre,telefono,direccion,correo = linea.split(":")
+                        self.Clientes[nit] = {
+                            "nombre": nombre,
+                            "telefono": telefono,
+                            "direccion": direccion,
+                            "correo": correo
+                        }
+                print(f"Clientes importados correctamente")
+        except FileNotFoundError:
+            print(f"No existe el archivo a importar, se creará uno nuevo al guardar")
+    def guardarClientes(self):
+        with open("Clientes.txt", "w", encoding="utf-8") as archivo:
+            for nit,cliente in self.Clientes.items():
+                archivo.write(f"{nit}:{cliente['nombre']}:{cliente['telefono']}:{cliente['direccion']}:{cliente['correo']}\n")
     def AgregarCliente(self):
         while True:
             try:
@@ -348,7 +400,14 @@ class Mod_Clientes:
                             input("No se puede dejar el correo vacío")
                         else:
                             break
-                    self.Clientes[NIT] = Cliente(NIT,nombre,telefono,direccion,correo)
+                    ClienteNuevo = Cliente(NIT,nombre,telefono,direccion,correo)
+                    self.Clientes[clienteNuevo.NIT] = {
+                        "nombre": clienteNuevo.nombre,
+                        "telefono": clienteNuevo.telefono,
+                        "direccion": clienteNuevo.direccion,
+                        "correo": clienteNuevo.correo
+                    }
+                    self.guardarClientes()
                     input("Cliente ingresado correctamente")
                     break
                 else:
