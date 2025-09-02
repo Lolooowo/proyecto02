@@ -419,6 +419,28 @@ class Mod_Clientes:
 class Mod_DetallesVenta:
     def __init__(self):
         self.Detalles_Venta = {}
+        self.cargarDetallesVentas()
+    def cargarDetallesVentas(self):
+        try:
+            with open("DetallesVentas.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idDetVenta,idVenta,cantidad,idProd,precio,subtotal=linea.split(":")
+                        self.Detalles_Venta[idDetVenta] = {
+                            "idVenta": idVenta,
+                            "cantidad": cantidad,
+                            "idProd": idProd,
+                            "precio": precio,
+                            "subtotal": subtotal
+                        }
+                print("Detalles venta importados correctamente")
+        except FileNotFoundError:
+            print(f"No existe el archivo a importar, se creará uno nuevo al guardar")
+    def guardarDetallesVenta(self):
+        with open("DetallesVentas.txt", "w", encoding="utf-8") as archivo:
+            for idDet, valor in self.Detalles_Venta.items():
+                archivo.write(f"{idDet}:{valor["idVenta"]}:{valor["cantidad"]}:{valor["idProd"]}:{valor["precio"]}:{valor["subtotal"]}\n")
     def AgregarDetallesVenta(self, idVenta):
         idProd = 0
         while idProd!=1972:
@@ -458,7 +480,15 @@ class Mod_DetallesVenta:
                                     input("Ingrese una cantidad correcta")
                             precio = producto.precio
                             subTotal = precio * cantidad
-                            self.Detalles_Venta[idDet]: DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
+                            nuevoDetalleVenta = DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
+                            self.Detalles_Venta[nuevoDetalleVenta.idDet] = {
+                                "idVenta": nuevoDetalleVenta.idVenta,
+                                "cantidad": nuevoDetalleVenta.cantidad,
+                                "idProd": nuevoDetalleVenta.IDProducto,
+                                "precio": nuevoDetalleVenta.precio,
+                                "subtotal": nuevoDetalleVenta.subtotal
+                            }
+                            self.guardarDetallesVenta()
                             input("Detalle venta agregada correcta")
                             break
                 except ValueError:
