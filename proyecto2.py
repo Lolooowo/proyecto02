@@ -136,6 +136,7 @@ class Mod_Empleado:
                     break
                 else:
                     print("El ID de empleado ya existe")
+                    break
             except ValueError:
                 input("Ingresa un ID correctamente, únicamente numeros")
     def MostrarDatos(self):
@@ -162,7 +163,7 @@ class Mod_Categoria:
     def guardar_Categorias(self):
         with open(f"Categorias.txt", "w", encoding="utf-8") as archivo:
             for clave, valor in self.Categorias.items():
-                archivo.write(f"{clave}:{valor.nombre}\n")
+                archivo.write(f"{clave}:{valor["nombre"]}\n")
     def AgregarCategoria(self):
         while True:
             try:
@@ -187,11 +188,11 @@ class Mod_Categoria:
                 input("Ingrese unicamente números")
     def MostrarDatos(self):
         for id,cat in self.Categorias.items():
-            print(f"\tID:{id} Nombre:{cat.nombre}")
+            print(f"\tID: {id} Nombre: {cat["nombre"]}\n")
 class Mod_Proveedor:
     def __init__(self):
         self.Proveedores = {}
-        self.cargarProveedor()
+        self.cargarProveedores()
     def cargarProveedores(self):
         try:
             with open(f"Proveedores.txt", "r", encoding="utf-8") as archivo:
@@ -289,7 +290,7 @@ class Mod_Producto:
                             "idCat": idCat,
                             "precio": precio,
                             "totalVentas": totalVentas,
-                            "TotalCompras": TotalCompras,
+                            "totalCompras": TotalCompras,
                             "stock": stock
                         }
                 print(f"Productos importados correctamente desde el archivo {archivo.name}")
@@ -309,7 +310,7 @@ class Mod_Producto:
                         salir= idP
                         break
                     else:
-                        if idP not in self.Productos:
+                        if idP not in self.Productos.keys():
                             while True:
                                 nombre = input("Ingrese el nombre del producto: ").strip()
                                 if not nombre:
@@ -318,7 +319,7 @@ class Mod_Producto:
                                     break
                             while True:
                                 idCat = int(input("Ingrese el ID del categoria: "))
-                                if idCat not in Mod_Categoria.Categorias:
+                                if idCat in Mod_Categoria.Categorias.keys():
                                     input("Error: La categoría no existe. Agrega primero la categoría.")
                                     break
                                 else:
@@ -347,6 +348,9 @@ class Mod_Producto:
 
                 except ValueError:
                     input("Ingrese un ID correcto")
+    def MostrarDatos(self):
+        for idProd,producto in self.Productos.items():
+            print(f"\t ID: {idProd}| Nombre: {producto["nombre"]}| Stock: {producto["stock"]}\n")
 class Mod_Clientes:
     def __init__(self):
         self.Clientes ={}
@@ -414,7 +418,9 @@ class Mod_Clientes:
                     input("El ID del cliente ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
-
+    def MostrarDatos(self):
+        for id,cliente in self.Clientes.items():
+            print(f"NIT: {id} | Nombre: {cliente['nombre']} | Telefono: {cliente['telefono']} | Direccion: {cliente['direccion']} | Correo: {cliente['correo']} \n")
 
 class Mod_DetallesVenta:
     def __init__(self):
@@ -564,6 +570,14 @@ class Mod_Venta:
                     input("El ID de la venta ya existe")
             except ValueError:
                 input("Ingrese un ID correcto")
+    def MostrarDatos(self):
+        for idVenta, valor in self.Ventas.items():
+            print(f"IDVenta: {idVenta}")
+            print(f"Fecha: {valor['fecha']}")
+            for idDet, detalles in Mod_DetallesVenta.Detalles_Venta.items():
+                if valor["idVenta"] == idVenta:
+                    print(f"Cantidad: {detalles["cantidad"]} | Producto: {detalles["producto"]}")
+
 class Mod_DetallesCompras:
     def __init__(self):
         self.Detalles_Compras = {}
@@ -838,8 +852,10 @@ while True:
                                 input("")
                             case 6:
                                 Mod_Clientes.MostrarDatos()
+                                input("")
                             case 7:
-                                Mod_Categorias.MostrarDatos()
+                                Mod_Categoria.MostrarDatos()
+                                input("")
                             case 8:
                                 input("Saliendo al menú principal...")
                                 break
