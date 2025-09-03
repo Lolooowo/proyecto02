@@ -333,7 +333,7 @@ class Mod_Producto:
                                     nuevoProducto = Producto(idP,nombre, idCat,precio,totalCompras,totalVentas)
                                     self.Productos[nuevoProducto.IDProducto] = {
                                         "nombre": nuevoProducto.nombre,
-                                        "idCat": nuevoProducto.idCat,
+                                        "idCat": nuevoProducto.IDCategoria,
                                         "precio": nuevoProducto.precio,
                                         "totalVentas": nuevoProducto.totalVentas,
                                         "totalCompras": nuevoProducto.totalCompras,
@@ -401,11 +401,11 @@ class Mod_Clientes:
                         else:
                             break
                     ClienteNuevo = Cliente(NIT,nombre,telefono,direccion,correo)
-                    self.Clientes[clienteNuevo.NIT] = {
-                        "nombre": clienteNuevo.nombre,
-                        "telefono": clienteNuevo.telefono,
-                        "direccion": clienteNuevo.direccion,
-                        "correo": clienteNuevo.correo
+                    self.Clientes[ClienteNuevo.NIT] = {
+                        "nombre": ClienteNuevo.nombre,
+                        "telefono": ClienteNuevo.telefono,
+                        "direccion": ClienteNuevo.direccion,
+                        "correo": ClienteNuevo.correo
                     }
                     self.guardarClientes()
                     input("Cliente ingresado correctamente")
@@ -481,12 +481,12 @@ class Mod_DetallesVenta:
                             precio = producto.precio
                             subTotal = precio * cantidad
                             nuevoDetalleVenta = DetallesVenta(idDet,idVenta,cantidad,idProd,precio, subTotal)
-                            self.Detalles_Venta[nuevoDetalleVenta.idDet] = {
-                                "idVenta": nuevoDetalleVenta.idVenta,
+                            self.Detalles_Venta[nuevoDetalleVenta.IDDetallesVenta] = {
+                                "idVenta": nuevoDetalleVenta.IDVenta,
                                 "cantidad": nuevoDetalleVenta.cantidad,
                                 "idProd": nuevoDetalleVenta.IDProducto,
                                 "precio": nuevoDetalleVenta.precio,
-                                "subtotal": nuevoDetalleVenta.subtotal
+                                "subtotal": nuevoDetalleVenta.subTotal
                             }
                             self.guardarDetallesVenta()
                             input("Detalle venta agregada correcta")
@@ -499,6 +499,28 @@ class Mod_DetallesVenta:
 class Mod_Venta:
     def __init__(self):
         self.Ventas = {}
+        self.cargarVentas()
+    def cargarVentas(self):
+        try:
+            with open("Ventas.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idVenta,fecha,nit,idEmp,total = linea.split(":")
+                        self.Ventas[idVenta] = {
+                            "fecha": fecha,
+                            "nit": nit,
+                            "idEmp": idEmp,
+                            "total": total
+                        }
+                print("Ventas importadas correctamente")
+        except FileNotFoundError:
+            print("No existe el archivo Ventas.txt, se creará uno nuevo al guardar")
+    def guardarVenta(self):
+        with open("Ventas.txt", "w", encoding="utf-8") as archivo:
+            for idVenta, valor in self.Ventas.items():
+                archivo.write(f"{idVenta}:{valor["fecha"]}:{valor["nit"]}:{valor["idEmp"]}:{valor["total"]}\n")
+
     def AgregarVenta(self):
         while True:
             try:
@@ -529,7 +551,14 @@ class Mod_Venta:
                     for clave, valor in Mod_DetallesVenta.Detalles_Venta.items():
                         if valor.idVenta == idVenta:
                             total += valor.subTotal
-                    self.Ventas[idVenta] = Venta(idVenta,fecha_str,NIT,idEm,total)
+                    nuevaVenta = Venta(idVenta,fecha_str,NIT,idEm,total)
+                    self.Ventas[nuevaVenta.IDVenta] = {
+                        "fecha": nuevaVenta.fecha,
+                        "NIT": nuevaVenta.NIT,
+                        "idEmp": nuevaVenta.IDEmpleado,
+                        "total": nuevaVenta.total
+                    }
+                    self.guardarVenta()
                     input("Venta ingresada correctamente")
                 else:
                     input("El ID de la venta ya existe")
@@ -538,6 +567,31 @@ class Mod_Venta:
 class Mod_DetallesCompras:
     def __init__(self):
         self.Detalles_Compras = {}
+        self.cargarDetallesCompras()
+    def cargarDetallesCompras(self):
+        try:
+            with open("DetallesCompras.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        idDetComp,idComp,cantidad,idProd,precioCompra,subtotal,fechaCad = linea.split(":")
+                        self.Detalles_Compras[idDetComp] = {
+                            "idCompra": idComp,
+                            "cantidad": cantidad,
+                            "idProd": idProd,
+                            "precioCompra": precioCompra,
+                            "subtotal": subtotal,
+                            "fechaCad": fechaCad
+                        }
+                print("Detalles compras importadas")
+        except FileNotFoundError:
+            print("No se encontró el archivo, se creará uno al guardar")
+
+    def guardarDetallesCompras(self):
+        with open("DetallesCompras.txt", "w", encoding="utf-8") as archivo:
+            for idDetComp, valor in self.Detalles_Compras.items():
+                archivo.write(f"{idDetComp}:{valor["idCompra"]}:{valor["cantidad"]}:{valor["idProd"]}:{valor["precioCompra"]}:{valor["subtotal"]}:{valor["fechaCad"]}\n")
+
     def AgregarCompras(self, idCompras):
         cantidad= 0
         while cantidad!=1972:
@@ -585,12 +639,42 @@ class Mod_DetallesCompras:
                     break
                 except ValueError:
                     input("Formato de fecha inválido. Debe ser dd/mm/yy.")
-            self.Detalles_Compras[idDetCom]= DetallesCompras(idDetCom,idCompras,cantidad,idProd,precioCompra,subtotal,fechaCaducidad)
+            nuevoDetallesCompra = DetallesCompras(idDetCom,idCompras,cantidad,idProd,precioCompra,subtotal,fechaCaducidad)
+            self.Detalles_Compras[nuevoDetallesCompra.IDDetallesCompras] = {
+                "idCompras": nuevoDetallesCompra.IDcompras,
+                "cantidad": nuevoDetallesCompra.cantidad,
+                "idProd": nuevoDetallesCompra.IDproducto,
+                "precioCompra": nuevoDetallesCompra.precioCompra,
+                "subtotal": nuevoDetallesCompra.subtotal,
+                "fechaCad": nuevoDetallesCompra.fechaCaducidad
+            }
+            self.guardarDetallesCompras()
             input("Venta agregada correctamente")
 
 class Mod_Compras:
     def __init__(self):
         self.Compras = {}
+        self.cargarCompras()
+    def cargarCompras(self):
+        try:
+            with open("Compras.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea= linea.strip()
+                    if linea:
+                        idCompras,fecha,idProv,idEmp,total=linea.split(":")
+                        self.Compras[idCompras] = {
+                            "fecha": fecha,
+                            "idProv": idProv,
+                            "idEmp": idEmp,
+                            "total": total
+                        }
+                print("Compras importadas")
+        except FileNotFoundError:
+            print("No existe el archivo Compras.txt, se creará uno al guardar")
+    def guardarCompras(self):
+        with open("Compras.txt", "w", encoding="utf-8") as archivo:
+            for idCompras, valor in self.Compras.items():
+                archivo.write(f"{idCompras}:{valor["fecha"]}:{valor["idProv"]}:{valor["idEmp"]}:{valor["total"]}\n")
     def agregarCompras(self):
         while True:
             try:
@@ -629,7 +713,14 @@ class Mod_Compras:
                                     for clave, valor in Mod_DetallesCompras.Detalles_Compras.items():
                                         if valor.idCompra == idCom:
                                             total += valor.subtotal
-                                    self.Compras[idCom] = Compras(idCom, fechaCompra_str, idProv, idEmp, total)
+                                    nuevaCompra = Compras(idCom, fechaCompra_str, idProv, idEmp, total)
+                                    self.Compras[nuevaCompra.idCompra] = {
+                                        "fecha": nuevaCompra.fecha,
+                                        "idProv": nuevaCompra.IDproveedor,
+                                        "idEmp": nuevaCompra.IDempleado,
+                                        "total": nuevaCompra.total
+                                    }
+                                    self.guardarCompras()
                                     input("Venta agregada correctamente")
                             except ValueError:
                                 input("Ingrese un ID correcto")
